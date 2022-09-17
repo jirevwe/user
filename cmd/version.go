@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/jirevwe/user"
+	"github.com/jirevwe/user/version"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +12,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print out the cli version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("%s\n", user.GetVersion())
+		fmt.Printf("%s\n", version.GetVersion())
 	},
 }
 
