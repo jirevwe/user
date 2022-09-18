@@ -3,15 +3,16 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+	"os"
+
 	"github.com/jirevwe/user/util"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jirevwe/user/internel/pkg/server"
+	"github.com/jirevwe/user/internal/pkg/server"
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
