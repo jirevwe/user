@@ -1,13 +1,4 @@
-package main
-
-import "gorm.io/gorm"
-
-type User struct {
-	gorm.Model
-	FullName string `json:"full_name" gorm:"not null"`
-	Email    string `json:"email" gorm:"unique;not null"`
-	Password string `json:"-"`
-}
+package router
 
 type UserResponse struct {
 	FullName string `json:"full_name"`
