@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/jirevwe/user/util"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
@@ -48,7 +47,7 @@ var serverCmd = &cobra.Command{
 
 		r := chi.NewRouter()
 		srv := server.NewServer(9000)
-		srv.SetHandler(r.Route("/user", func(userRoute chi.Router) {
+		srv.SetHandler(r.Route("/", func(userRoute chi.Router) {
 			userRoute.Post(
 				"/signup",
 				func(w http.ResponseWriter, r *http.Request) {
@@ -114,27 +113,51 @@ var serverCmd = &cobra.Command{
 					"Successful", SignUpRequest{Email: "wkjf"}, http.StatusOK))
 			})
 
-			userRoute.Post("/login", Login)
+			userRoute.Post("/login", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("content-type", "application/json")
+				var requestBody LoginRequest
+				var user User
+				err := json.NewDecoder(r.Body).Decode(&requestBody)
+				if err != nil {
+					_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
+						err))
+					return
+				}
+
+				if requestBody.Email == "" {
+					_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(errors.New("email cannot be empty")))
+					return
+				}
+
+				result := db.First(&user, "email = ?", requestBody.Email)
+
+				if result.Error == gorm.ErrRecordNotFound {
+					_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
+						errors.New("User with email/password does not exist")))
+					return
+				}
+
+				if err = bcrypt2.CompareHashAndPassword([]byte(user.Password), []byte(requestBody.Password)); err != nil {
+					_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
+						errors.New("User with email/password does not exist")))
+					return
+				}
+
+				_ = json.NewEncoder(w).Encode(util.NewServerResponse(
+					"Successful", user, http.StatusOK))
+
+			})
 		}))
 		log.Infof("server running on port %v", 9000)
 		srv.Listen()
 
 		// Migrate the schema
-		db.AutoMigrate(&User{})
+		dbMigration(db)
 	},
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	var requestBody LoginRequest
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
-	if err != nil {
-		_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
-			err))
-		return
-	}
-
-	fmt.Println(requestBody)
+func dbMigration(db *gorm.DB) {
+	db.AutoMigrate(&User{})
 }
 
 func init() {
