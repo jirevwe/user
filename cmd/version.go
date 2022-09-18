@@ -19,8 +19,3 @@ var versionCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }
-
-//sign
-//login
-//forgot password
-//update password

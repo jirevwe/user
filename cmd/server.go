@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/jirevwe/user/util"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
@@ -54,26 +53,26 @@ var serverCmd = &cobra.Command{
 				func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("content-type", "application/json")
 					var requestBody SignUpRequest
-					err := json.NewDecoder(r.Body).Decode(&requestBody)
+					err := util.DecodeJson(r.Body, &requestBody)
 
 					if err != nil {
-						_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(err))
+						_ = util.EncodeJson(w, err)
 						return
 					}
 
 					if requestBody.Email == "" {
-						_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(errors.New("email cannot be empty")))
+						_ = util.EncodeJson(w, err)
 						return
 					}
 
 					if requestBody.FullName == "" {
-						_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(errors.New("full name cannot be empty")))
+						_ = util.EncodeJson(w, errors.New("full name cannot be empty"))
 						return
 					}
 
 					if requestBody.Password == "" || len(requestBody.Password) < 8 {
-						_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
-							errors.New("password cannot be empty or less than 8 characters")))
+
+						_ = util.EncodeJson(w, errors.New("password cannot be empty or less than 8 characters"))
 						return
 					}
 
@@ -81,7 +80,6 @@ var serverCmd = &cobra.Command{
 
 					if bcryptErr != nil {
 						log.Fatal(bcryptErr)
-						return
 					}
 
 					result := db.Create(&User{FullName: requestBody.FullName,
@@ -89,13 +87,12 @@ var serverCmd = &cobra.Command{
 						Password: string(hashedPassword)})
 
 					if result.Error != nil {
-						_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
-							result.Error))
+						_ = util.EncodeJson(w, result.Error)
 						return
 					}
 
 					_ = json.NewEncoder(w).Encode(util.NewServerResponse(
-						"User succesffully created",
+						"User successfully created",
 						UserResponse{
 							Email:    requestBody.Email,
 							FullName: requestBody.FullName,
@@ -104,37 +101,50 @@ var serverCmd = &cobra.Command{
 				},
 			)
 
-			userRoute.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+			userRoute.Post("/login", func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("content-type", "application/json")
-
+				var requestBody LoginRequest
+				var user User
+				err := util.DecodeJson(r.Body, &requestBody)
 				if err != nil {
-					log.Fatal(err)
+					_ = util.EncodeJson(w, err)
+					return
 				}
-				_ = json.NewEncoder(w).Encode(util.NewServerResponse(
-					"Successful", SignUpRequest{Email: "wkjf"}, http.StatusOK))
-			})
 
-			userRoute.Post("/login", Login)
+				if requestBody.Email == "" {
+					_ = util.EncodeJson(w, errors.New("email cannot be empty"))
+					return
+				}
+
+				result := db.First(&user, "email = ?", requestBody.Email)
+
+				if result.Error == gorm.ErrRecordNotFound {
+					_ = util.EncodeJson(w, errors.New("User with email/password does not exist"))
+					return
+				}
+
+				if err = bcrypt2.CompareHashAndPassword([]byte(user.Password), []byte(requestBody.Password)); err != nil {
+					_ = util.EncodeJson(w, errors.New("User with email/password does not exist"))
+					return
+				}
+
+				_ = util.EncodeJsonStatus(w, "Success", http.StatusOK, user)
+
+			})
 		}))
 		log.Infof("server running on port %v", 9000)
 		srv.Listen()
 
 		// Migrate the schema
-		db.AutoMigrate(&User{})
+		dbMigration(db)
 	},
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	var requestBody LoginRequest
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+func dbMigration(db *gorm.DB) {
+	err := db.AutoMigrate(&User{})
 	if err != nil {
-		_ = json.NewEncoder(w).Encode(util.NewServiceErrResponse(
-			err))
-		return
+		log.Fatal(err)
 	}
-
-	fmt.Println(requestBody)
 }
 
 func init() {
