@@ -2,9 +2,11 @@ package main
 
 import (
 	"os"
+	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/jirevwe/user/internel/pkg/server"
+	"github.com/jirevwe/user/internal/pkg/database"
+	"github.com/jirevwe/user/internal/pkg/router"
+	"github.com/jirevwe/user/internal/pkg/server"
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
@@ -18,10 +20,9 @@ var serverCmd = &cobra.Command{
 	Short:   "Starts the http server",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.SetLevel(log.InfoLevel)
-
 		log.SetFormatter(&prefixed.TextFormatter{
 			DisableColors:   false,
-			TimestampFormat: "2006-01-02 15:04:05",
+			TimestampFormat: time.RFC3339,
 			FullTimestamp:   true,
 			ForceFormatting: true,
 		})
@@ -32,8 +33,11 @@ var serverCmd = &cobra.Command{
 			log.Fatal("failed to set env - ", err)
 		}
 
+		db := database.NewDB()
+		r := router.NewRouter(db)
+
 		srv := server.NewServer(9000)
-		srv.SetHandler(chi.NewRouter())
+		srv.SetHandler(r)
 		log.Infof("server running on port %v", 9000)
 		srv.Listen()
 	},
