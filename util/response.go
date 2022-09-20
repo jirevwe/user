@@ -76,7 +76,8 @@ func NewServerResponse(msg string, object interface{}, statusCode int) ServerRes
 	if err != nil {
 		log.Errorf("unable to marshal response data - %s", err)
 	}
-	return newServerResponseWithStatus(true, msg, data, statusCode)
+	successful := statusCode < 400
+	return newServerResponseWithStatus(successful, msg, data, statusCode)
 }
 
 func newServerResponseWithStatus(status bool, msg string, data json.RawMessage, statusCode int) ServerResponse {
