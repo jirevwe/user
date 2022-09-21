@@ -5,8 +5,6 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
-
-	"github.com/jirevwe/user/internal/pkg/database"
 )
 
 const pkgName = "postgres"
@@ -15,7 +13,7 @@ type Postgres struct {
 	db *sql.DB
 }
 
-func NewDB() database.Database {
+func NewDB() *Postgres {
 	db, err := sql.Open("postgres", "postgres://user:pass@localhost/bookstore")
 	if err != nil {
 		log.Fatalf("[%s]: failed to open database - %v", pkgName, err)

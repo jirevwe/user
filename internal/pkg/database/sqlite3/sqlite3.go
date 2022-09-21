@@ -5,8 +5,6 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-
-	"github.com/jirevwe/user/internal/pkg/database"
 )
 
 const pkgName = "sqlite3"
@@ -15,7 +13,7 @@ type Sqlite struct {
 	db *sql.DB
 }
 
-func NewDB() database.Database {
+func NewDB() *Sqlite {
 	db, err := sql.Open("sqlite3", "test.db")
 	if err != nil {
 		log.Fatalf("[%s]: failed to open database - %v", pkgName, err)
