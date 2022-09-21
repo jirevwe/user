@@ -19,22 +19,25 @@ func SignUpRoute(db *gorm.DB) http.HandlerFunc {
 		err := util.DecodeJson(r.Body, &requestBody)
 
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, err)
 			return
 		}
 
 		if requestBody.Email == "" {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, err)
 			return
 		}
 
 		if requestBody.FullName == "" {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, errors.New("full name cannot be empty"))
 			return
 		}
 
 		if requestBody.Password == "" || len(requestBody.Password) < 8 {
-
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, errors.New("password cannot be empty or less than 8 characters"))
 			return
 		}
@@ -50,6 +53,7 @@ func SignUpRoute(db *gorm.DB) http.HandlerFunc {
 			Password: string(hashedPassword)})
 
 		if result.Error != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 			_ = util.EncodeJson(w, result.Error)
 			return
 		}

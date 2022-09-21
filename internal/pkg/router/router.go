@@ -12,6 +12,7 @@ func NewRouter(db *gorm.DB) http.Handler {
 	r.Route("/user", func(userRoute chi.Router) {
 		userRoute.Post("/signup", SignUpRoute(db))
 		userRoute.Post("/login", LoginRoute(db))
+		userRoute.Put("/passcode/update", UpdatePasscodeRoute(db))
 	})
 
 	return r
