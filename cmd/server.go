@@ -33,7 +33,11 @@ var serverCmd = &cobra.Command{
 			log.Fatal("failed to set env - ", err)
 		}
 
-		db := database.New()
+		db, err := database.New()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		r := router.NewRouter(db)
 
 		srv := server.NewServer(9000)

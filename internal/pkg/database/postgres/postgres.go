@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -13,13 +13,13 @@ type Postgres struct {
 	db *sql.DB
 }
 
-func NewDB() *Postgres {
-	db, err := sql.Open("postgres", "postgres://user:pass@localhost/bookstore")
+func NewDB() (*Postgres, error) {
+	db, err := sql.Open("postgres", "postgres://user:pass@localhost/user")
 	if err != nil {
-		log.Fatalf("[%s]: failed to open database - %v", pkgName, err)
+		return nil, fmt.Errorf("[%s]: failed to open database - %v", pkgName, err)
 	}
 
-	return &Postgres{db: db}
+	return &Postgres{db: db}, nil
 }
 
 func (s *Postgres) GetDB() *sql.DB {

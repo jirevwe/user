@@ -12,7 +12,11 @@ type Database interface {
 	FindAll(q string, out []interface{}) error
 }
 
-func New() Database {
-	// return postgres.NewDB()
-	return sqlite3.NewDB()
+func New() (Database, error) {
+	db, err := sqlite3.NewDB()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

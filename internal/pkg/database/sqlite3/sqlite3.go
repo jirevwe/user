@@ -2,7 +2,7 @@ package sqlite3
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -13,13 +13,13 @@ type Sqlite struct {
 	db *sql.DB
 }
 
-func NewDB() *Sqlite {
+func NewDB() (*Sqlite, error) {
 	db, err := sql.Open("sqlite3", "test.db")
 	if err != nil {
-		log.Fatalf("[%s]: failed to open database - %v", pkgName, err)
+		return nil, fmt.Errorf("[%s]: failed to open database - %v", pkgName, err)
 	}
 
-	return &Sqlite{db: db}
+	return &Sqlite{db: db}, nil
 }
 
 func (s *Sqlite) GetDB() *sql.DB {
