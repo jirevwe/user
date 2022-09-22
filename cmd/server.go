@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/jirevwe/user/internal/pkg/database"
-	"github.com/jirevwe/user/internal/pkg/router"
-	"github.com/jirevwe/user/internal/pkg/server"
+	"github.com/jirevwe/user/pkg/database"
+	"github.com/jirevwe/user/pkg/router"
+	"github.com/jirevwe/user/pkg/server"
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
@@ -33,7 +33,11 @@ var serverCmd = &cobra.Command{
 			log.Fatal("failed to set env - ", err)
 		}
 
-		db := database.NewDB()
+		db, err := database.New()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		r := router.NewRouter(db)
 
 		srv := server.NewServer(9000)

@@ -3,16 +3,16 @@ package router
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jirevwe/user/internal/pkg/database"
-	"github.com/jirevwe/user/util"
-	bcrypt2 "golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
+
+	"github.com/jirevwe/user/pkg/database"
+	"github.com/jirevwe/user/pkg/models"
+	"github.com/jirevwe/user/util"
+	bcrypt2 "golang.org/x/crypto/bcrypt"
 )
 
-func SignUpRoute(db *gorm.DB) http.HandlerFunc {
-
+func SignUp(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		var requestBody SignUpRequest
@@ -34,7 +34,6 @@ func SignUpRoute(db *gorm.DB) http.HandlerFunc {
 		}
 
 		if requestBody.Password == "" || len(requestBody.Password) < 8 {
-
 			_ = util.EncodeJson(w, errors.New("password cannot be empty or less than 8 characters"))
 			return
 		}
@@ -45,17 +44,20 @@ func SignUpRoute(db *gorm.DB) http.HandlerFunc {
 			log.Fatal(bcryptErr)
 		}
 
-		result := db.Create(&database.User{FullName: requestBody.FullName,
+		u := &models.CreateUser{
+			FullName: requestBody.FullName,
 			Email:    requestBody.Email,
-			Password: string(hashedPassword)})
+			Password: string(hashedPassword),
+		}
 
-		if result.Error != nil {
-			_ = util.EncodeJson(w, result.Error)
+		err = db.GetUserService().Create(u)
+		if err != nil {
+			_ = util.EncodeJson(w, err)
 			return
 		}
 
 		_ = json.NewEncoder(w).Encode(util.NewServerResponse(
-			"User successfully created",
+			"user account created",
 			UserResponse{
 				Email:    requestBody.Email,
 				FullName: requestBody.FullName,
