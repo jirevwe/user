@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jirevwe/user/pkg/database"
-	"github.com/jirevwe/user/pkg/models"
+	"github.com/jirevwe/user/internal/pkg/database"
+	"github.com/jirevwe/user/internal/pkg/models"
 	"github.com/jirevwe/user/util"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
 )

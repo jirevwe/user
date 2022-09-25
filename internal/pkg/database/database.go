@@ -1,9 +1,9 @@
 package database
 
 import (
-	_ "github.com/jirevwe/user/pkg/database/postgres"
-	"github.com/jirevwe/user/pkg/database/sqlite3"
-	"github.com/jirevwe/user/pkg/services"
+	_ "github.com/jirevwe/user/internal/pkg/database/postgres"
+	"github.com/jirevwe/user/internal/pkg/database/sqlite3"
+	"github.com/jirevwe/user/internal/pkg/services"
 	"github.com/jmoiron/sqlx"
 )
 
