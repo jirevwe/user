@@ -50,7 +50,7 @@ func TestEncodeJsonStatus(t *testing.T) {
 	wantP := person{Name: "chukwudi", Country: "nigeria"}
 
 	haveMessageStr := "successful"
-	haveStatusCode := http.StatusNotFound
+	haveStatusCode := http.StatusOK
 
 	wantObject := `{"status":true,"message":"successful","data":{"name":"chukwudi","country":"nigeria"}}`
 
