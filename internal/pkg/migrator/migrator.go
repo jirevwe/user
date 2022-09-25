@@ -19,7 +19,7 @@ func New(d database.Database) *Migrator {
 }
 
 func (m *Migrator) Up() error {
-	_, err := migrate.Exec(m.dbx.DB, "sqlite3", m.src, migrate.Up)
+	_, err := migrate.ExecMax(m.dbx.DB, "sqlite3", m.src, migrate.Up, 1)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (m *Migrator) Up() error {
 }
 
 func (m *Migrator) Down() error {
-	_, err := migrate.Exec(m.dbx.DB, "sqlite3", m.src, migrate.Down)
+	_, err := migrate.ExecMax(m.dbx.DB, "sqlite3", m.src, migrate.Down, 1)
 	if err != nil {
 		return err
 	}
