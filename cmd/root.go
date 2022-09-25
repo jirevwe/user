@@ -8,7 +8,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "user",
-	Short: "user is a digital ledger",
+	Short: "user is a small go server with an sql db store",
 }
 
 func Execute() {
