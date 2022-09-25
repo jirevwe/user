@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/jaevor/go-nanoid"
-	"github.com/jirevwe/user/pkg/models"
+	"github.com/jirevwe/user/internal/pkg/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -71,10 +71,6 @@ func (u *UserService) Authenticate(email string) (*models.User, error) {
 	err := u.DB.QueryRowx(findUserQuery, email).StructScan(&user)
 	if err != nil {
 		return nil, err
-	}
-
-	if user.DeletedAt.Valid {
-		
 	}
 
 	return &user, nil

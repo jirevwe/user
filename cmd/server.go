@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/jirevwe/user/pkg/database"
-	"github.com/jirevwe/user/pkg/router"
-	"github.com/jirevwe/user/pkg/server"
+	"github.com/jirevwe/user/internal/pkg/database"
+	"github.com/jirevwe/user/internal/pkg/server"
+	"github.com/jirevwe/user/router"
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"

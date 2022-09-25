@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/jirevwe/user/pkg/services"
+	"github.com/jirevwe/user/internal/pkg/services"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
