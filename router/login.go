@@ -20,23 +20,27 @@ func Login(db database.Database) http.HandlerFunc {
 		var requestBody LoginRequest
 		err := util.DecodeJson(r.Body, &requestBody)
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, err)
 			return
 		}
 
 		if requestBody.Email == "" {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, ErrEmailCannotBeEmpty)
 			return
 		}
 
 		user, err := db.GetUserService().Authenticate(requestBody.Email)
 		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
 			_ = util.EncodeJson(w, ErrAccountNotFound)
 			return
 		}
 
 		err = bcrypt2.CompareHashAndPassword([]byte(user.Password), []byte(requestBody.Password))
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, ErrAccountNotFound)
 			return
 		}
