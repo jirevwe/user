@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/jaevor/go-nanoid"
 	"github.com/jirevwe/user/internal/pkg/models"
+	"github.com/jirevwe/user/router"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -25,6 +26,11 @@ const (
 	findUserQuery = `
 	--models/user.go:Authenticate
 	SELECT * FROM users WHERE email = $1;
+	`
+
+	updateUserPassword = `
+	--models/user.go:UpdateUserPassword
+	UPDATE users SET password = $1 WHERE email = $2;
 	`
 )
 
@@ -74,4 +80,23 @@ func (u *UserService) Authenticate(email string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (u *UserService) UpdateUserPassword(email string, password string) error {
+	result, err := u.DB.Exec(updateUserPassword, password, email)
+
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+
+	if rowsAffected < 1 {
+		return router.ErrUserPasswordNotUpdated
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
