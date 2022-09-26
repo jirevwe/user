@@ -1,12 +1,14 @@
 package router
 
 import (
+	"errors"
 	"github.com/jirevwe/user/internal/pkg/database"
 	"github.com/jirevwe/user/util"
-	log "github.com/sirupsen/logrus"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
 	"net/http"
 )
+
+var ErrUserPasswordNotUpdated = errors.New("user password could not be update")
 
 func UpdatePasscode(db database.Database) http.HandlerFunc {
 
@@ -47,20 +49,19 @@ func UpdatePasscode(db database.Database) http.HandlerFunc {
 		}
 
 		err = bcrypt2.CompareHashAndPassword([]byte(user.Password), []byte(requestBody.CurrentPassword))
-
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, ErrAccountNotFound)
 			return
 		}
 
-		hashedPassword, bcryptErr := bcrypt2.GenerateFromPassword([]byte(requestBody.NewPassword), 8)
-
-		if bcryptErr != nil {
-			log.Fatal(bcryptErr)
+		hashedPassword, err := bcrypt2.GenerateFromPassword([]byte(requestBody.NewPassword), 8)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = util.EncodeJson(w, err)
 		}
 
 		err = db.GetUserService().UpdateUserPassword(requestBody.Email, string(hashedPassword))
-
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_ = util.EncodeJson(w, err)
