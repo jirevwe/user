@@ -12,6 +12,7 @@ func NewRouter(db database.Database) http.Handler {
 	r.Route("/user", func(userRoute chi.Router) {
 		userRoute.Post("/signup", SignUp(db))
 		userRoute.Post("/login", Login(db))
+		userRoute.Put("/passcode/update", UpdatePasscode(db))
 	})
 
 	return r
