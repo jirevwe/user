@@ -10,8 +10,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/jirevwe/user/internal/pkg/version"
 	"github.com/jirevwe/user/util"
-	"github.com/jirevwe/user/version"
+
 	log "github.com/sirupsen/logrus"
 )
 

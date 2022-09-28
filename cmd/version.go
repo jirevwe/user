@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/jirevwe/user/version"
+	"github.com/jirevwe/user/internal/pkg/version"
 	"github.com/spf13/cobra"
 )
 
@@ -17,5 +17,5 @@ var versionCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(versionCmd)
 }
