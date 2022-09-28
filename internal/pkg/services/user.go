@@ -1,11 +1,14 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/jaevor/go-nanoid"
 	"github.com/jirevwe/user/internal/pkg/models"
-	"github.com/jirevwe/user/router"
 	"github.com/jmoiron/sqlx"
 )
+
+var ErrUserPasswordNotUpdated = errors.New("user password could not be update")
 
 const (
 	createUserTableQuery = `
@@ -91,7 +94,7 @@ func (u *UserService) UpdateUserPassword(email string, password string) error {
 	rowsAffected, err := result.RowsAffected()
 
 	if rowsAffected < 1 {
-		return router.ErrUserPasswordNotUpdated
+		return ErrUserPasswordNotUpdated
 	}
 
 	if err != nil {

@@ -1,14 +1,12 @@
 package router
 
 import (
-	"errors"
+	"net/http"
+
 	"github.com/jirevwe/user/internal/pkg/database"
 	"github.com/jirevwe/user/util"
 	bcrypt2 "golang.org/x/crypto/bcrypt"
-	"net/http"
 )
-
-var ErrUserPasswordNotUpdated = errors.New("user password could not be update")
 
 func UpdatePasscode(db database.Database) http.HandlerFunc {
 
