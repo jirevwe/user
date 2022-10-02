@@ -45,8 +45,8 @@ const (
 	`
 
 	deleteUser = `
-    --models/user.go:DeleteUser
-    DELETE FROM users WHERE email = $1;
+        --models/user.go:DeleteUser
+        DELETE FROM users WHERE email = $1;
 	`
 )
 
