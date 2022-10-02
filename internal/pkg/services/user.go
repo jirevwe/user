@@ -109,19 +109,23 @@ func (u *UserService) UpdateUserPassword(email string, password string) error {
 	return nil
 }
 
-func (u *UserService) GetAllUsers() (*[]models.User, error) {
+func (u *UserService) GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	rows, err := u.DB.Queryx(getAllUsers)
-
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
 		var user models.User
-		_ = rows.StructScan(&user)
+
+		err = rows.StructScan(&user)
+		if err != nil {
+			return nil, err
+		}
+
 		users = append(users, user)
 	}
 
-	return &users, nil
+	return users, nil
 }
