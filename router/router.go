@@ -14,6 +14,7 @@ func NewRouter(db database.Database) http.Handler {
 		userRoute.Post("/login", Login(db))
 		userRoute.Put("/passcode", UpdatePasscode(db))
 		userRoute.Get("/", FetchAllUsers(db))
+		userRoute.Delete("/", DeleteUser(db))
 	})
 
 	return r
