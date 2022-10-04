@@ -31,9 +31,14 @@ const (
 	SELECT * FROM users WHERE email = $1;
 	`
 
+	findUserByIdQuery = `
+	--models/user.go:Authenticate
+	SELECT * FROM users WHERE id = $1;
+	`
+
 	updateUserPassword = `
 	--models/user.go:UpdateUserPassword
-	UPDATE users SET password = $1 WHERE email = $2;
+	UPDATE users SET password = $1 WHERE id = $2;
 	`
 
 	getAllUsers = `
@@ -90,8 +95,18 @@ func (u *UserService) Authenticate(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func (u *UserService) UpdateUserPassword(email string, password string) error {
-	result, err := u.DB.Exec(updateUserPassword, password, email)
+func (u *UserService) FindUserById(id string) (*models.User, error) {
+	var user models.User
+	err := u.DB.QueryRowx(findUserByIdQuery, id).StructScan(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (u *UserService) UpdateUserPassword(userId string, password string) error {
+	result, err := u.DB.Exec(updateUserPassword, password, userId)
 
 	if err != nil {
 		return err
