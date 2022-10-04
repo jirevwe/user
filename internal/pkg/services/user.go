@@ -46,7 +46,7 @@ const (
 
 	deleteUser = `
     --models/user.go:DeleteUser
-    DELETE FROM users WHERE email = $1;
+    DELETE FROM users WHERE id = $1;
     `
 )
 
@@ -138,8 +138,8 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func (u *UserService) DeleteUser(email string) error {
-	results, err := u.DB.Exec(deleteUser, email)
+func (u *UserService) DeleteUser(userId string) error {
+	results, err := u.DB.Exec(deleteUser, userId)
 
 	if err != nil {
 		return err

@@ -4,22 +4,15 @@ import (
 	"github.com/jirevwe/user/internal/pkg/database"
 	"github.com/jirevwe/user/util"
 	"net/http"
+	"strings"
 )
 
 func DeleteUser(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
-		var requestBody DeleteRequest
+		userId := strings.TrimPrefix(r.URL.Path, "/users/")
 
-		err := util.DecodeJson(r.Body, &requestBody)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_ = util.EncodeJson(w, err)
-			return
-		}
-
-		err = db.GetUserService().DeleteUser(requestBody.Email)
-
+		err := db.GetUserService().DeleteUser(userId)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			_ = util.EncodeJson(w, err)
