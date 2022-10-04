@@ -35,6 +35,11 @@ const (
 	--models/user.go:UpdateUserPassword
 	UPDATE users SET password = $1 WHERE email = $2;
 	`
+
+	getAllUsers = `
+	--models/user.go:getAllUsers
+	SELECT * FROM users;
+	`
 )
 
 // UserService contains all methods and fields for interacting
@@ -102,4 +107,25 @@ func (u *UserService) UpdateUserPassword(email string, password string) error {
 	}
 
 	return nil
+}
+
+func (u *UserService) GetAllUsers() ([]models.User, error) {
+	var users []models.User
+	rows, err := u.DB.Queryx(getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var user models.User
+
+		err = rows.StructScan(&user)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }
