@@ -140,7 +140,6 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 
 func (u *UserService) DeleteUser(userId string) error {
 	results, err := u.DB.Exec(deleteUser, userId)
-
 	if err != nil {
 		return err
 	}
