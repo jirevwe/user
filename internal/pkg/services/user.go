@@ -8,7 +8,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var ErrUserPasswordNotUpdated = errors.New("user password could not be update")
+var (
+	ErrUserPasswordNotUpdated = errors.New("user password could not be update")
+	ErrUserNotDeleted         = errors.New("user could not be deleted")
+)
 
 const (
 	createUserTableQuery = `
@@ -37,9 +40,14 @@ const (
 	`
 
 	getAllUsers = `
-	--models/user.go:getAllUsers
+	--models/user.go:GetAllUsers
 	SELECT * FROM users;
 	`
+
+	deleteUser = `
+    --models/user.go:DeleteUser
+    DELETE FROM users WHERE id = $1;
+    `
 )
 
 // UserService contains all methods and fields for interacting
@@ -128,4 +136,19 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func (u *UserService) DeleteUser(userId string) error {
+	results, err := u.DB.Exec(deleteUser, userId)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := results.RowsAffected()
+
+	if rowsAffected == 0 {
+		return ErrUserNotDeleted
+	}
+
+	return nil
 }

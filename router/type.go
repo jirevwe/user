@@ -21,3 +21,7 @@ type UpdatePasscodeRequest struct {
 	CurrentPassword string `json:"current_password"`
 	NewPassword     string `json:"new_password"`
 }
+
+type DeleteRequest struct {
+	Email string `json:"email"`
+}
