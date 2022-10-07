@@ -12,7 +12,7 @@ func NewRouter(db database.Database) http.Handler {
 	r.Route("/users", func(userRoute chi.Router) {
 		userRoute.Post("/signup", SignUp(db))
 		userRoute.Post("/login", Login(db))
-		userRoute.Put("/passcode", UpdatePasscode(db))
+		userRoute.Put("/{user-id}/password", UpdatePasscode(db))
 		userRoute.Get("/", FetchAllUsers(db))
 		userRoute.Delete("/{user-id}", DeleteUser(db))
 	})
